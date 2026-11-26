@@ -794,7 +794,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 
   // --- dati: #g=data&d=riga~riga ; riga = NN;lat;lon;L;Luogo;Titolo;Fonte ; spazi come _ ; (il vecchio separatore | resta accettato)
   function parseHash(){
-    var h=(location.hash||'').replace(/^#/,'').replace(/&amp;/g,'&'), out={rows:null,date:null};
+    var h=(location.hash||location.search||'').replace(/^[#?]/,'').replace(/&amp;/g,'&'), out={rows:null,date:null};
     if(!h) return out;
     var g=h.match(/(?:^|&)g=([^&]*)/); if(g) out.date=clean(g[1]);
     var d=h.match(/(?:^|&)d=([\s\S]*?)(?=&g=|$)/);
