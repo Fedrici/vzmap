@@ -669,7 +669,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <style>
 :root{
   --bg:#F2F4F8; --surface:#FFFFFF; --surface-2:#EAEEF4; --fg:#121A26; --muted:#566274; --line:#D8DFE9;
-  --sea:#D7E4F0; --land:#F6F8FB; --geo-line:#AEBBCB; --accent:#123E6E; --accent-fg:#fff;
+  --sea:#D7E4F0; --land:#F6F8FB; --geo-line:#AEBBCB; --geo-line-st:#6B7A8F; --accent:#123E6E; --accent-fg:#fff;
   --lv4:#DC2626; --lv3:#EA580C; --lv2:#EAB308; --lv1:#0284C7;
   --shadow:0 10px 30px -12px rgba(15,30,55,.38);
   --gx:max(14px,env(safe-area-inset-left,0px)); --gx-r:max(14px,env(safe-area-inset-right,0px));
@@ -677,7 +677,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#0B1017; --surface:#131B26; --surface-2:#1B2532; --fg:#E7ECF3; --muted:#92A0B3; --line:#243044;
-  --sea:#080D13; --land:#172130; --geo-line:#2C3A4E; --accent:#86B8EA; --accent-fg:#0B1017;
+  --sea:#080D13; --land:#172130; --geo-line:#2C3A4E; --geo-line-st:#8FA3BD; --accent:#86B8EA; --accent-fg:#0B1017;
   --shadow:0 10px 30px -12px rgba(0,0,0,.7); color-scheme:dark;}}
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -831,13 +831,14 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   fc.features=fc.features.filter(function(f){return f.properties.name!=='Antarctica'});
   fc.features.forEach(function(f){unwrap(f.geometry)});
   var geo=L.geoJSON(fc,{interactive:false,style:{weight:.7}}).addTo(map);
-  function paintGeo(){geo.setStyle({fillColor:css('--land'),fillOpacity:1,color:css('--geo-line'),weight:.7});$('map').style.background=css('--sea')}
+  var street=false;
+  function paintGeo(){geo.setStyle(street?{fillOpacity:0,color:css('--geo-line-st'),weight:1.1,opacity:.85}:{fillColor:css('--land'),fillOpacity:1,color:css('--geo-line'),weight:.7,opacity:1});$('map').style.background=css('--sea')}
   paintGeo();
   try{window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',paintGeo)}catch(e){}
   var tiles=null;
   $('bBase').addEventListener('click',function(){
     var on=this.getAttribute('aria-pressed')!=='true';
-    this.setAttribute('aria-pressed',on);
+    this.setAttribute('aria-pressed',on);street=on;paintGeo();
     if(on){tiles=tiles||L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'});
       tiles.once('tileerror',function(){toast('Sfondo stradale non raggiungibile.')});tiles.addTo(map);tiles.bringToBack();map.attributionControl.addAttribution('')}
     else if(tiles){map.removeLayer(tiles)}
